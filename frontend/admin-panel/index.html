@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+</head>
+<body>
+  <h2>All Comments</h2>
+  <ul id="commentList"></ul>
+
+  <script>
+    async function loadComments() {
+      const res = await fetch("http://localhost:3000/admin/comments");
+      const comments = await res.json();
+
+      const list = document.getElementById('commentList');
+      list.innerHTML = "";
+
+      comments.forEach(comment => {
+        const item = document.createElement("li");
+        item.innerHTML = `
+          <strong>${comment.comment}</strong> (Toxic: ${comment.isToxic}) 
+          <button onclick="deleteComment(${comment.id})">Delete</button> 
+          <button onclick="banUser('${comment.userId}')">Ban User</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    async function deleteComment(id) {
+      await fetch(`http://localhost:3000/admin/comment/${id}`, {
+        method: "DELETE"
+      });
+      loadComments();
+    }
+
+    async function banUser(userId) {
+      await fetch("http://localhost:3000/admin/ban", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+      });
+      alert(`User ${userId} has been banned.`);
+    }
+
+    loadComments();
+  </script>
+</body>
+</html>

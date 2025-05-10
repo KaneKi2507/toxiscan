@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ToxiScan | AI Content Moderation</title>
+  <style>
+    /* [Style block remains unchanged] */
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ToxiScan</h1>
+  <nav>
+    <a href="#" class="nav-link active" onclick="showSection('home')">About</a>
+    <a href="#" class="nav-link" onclick="showSection('services')">Services</a>
+    <a href="#" class="nav-link" onclick="showSection('admin')">Admin</a>
+    <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- About Section -->
+  <section id="home">
+    <!-- [About section content remains unchanged] -->
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="hidden">
+    <h2>🔍 Services We Offer</h2>
+    <p>Explore and use our powerful moderation tools below.</p>
+
+    <div style="margin-top: 20px;">
+      <h3>📝 Text Detection</h3>
+      <label for="text-input">Enter your text below:</label>
+      <textarea id="text-input" rows="5" placeholder="Type something..."></textarea>
+      <button onclick="detectText()">Check Text</button>
+      <pre id="text-result"></pre>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h3>🖼 Image Text Detection (OCR)</h3>
+      <input type="file" id="image-input" accept="image/*" />
+      <button onclick="detectImage()">Check Image</button>
+      <pre id="image-result"></pre>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h3>🔞 NSFW Image Detection</h3>
+      <input type="file" id="nsfw-image-input" accept="image/*" />
+      <button onclick="detectNSFW()">Check NSFW</button>
+      <pre id="nsfw-result"></pre>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h3>🛡 Admin Control Panel Access</h3>
+      <button onclick="showSection('admin')">Go to Admin Panel</button>
+    </div>
+  </section>
+
+  <!-- Admin Panel -->
+  <section id="admin" class="hidden">
+    <!-- [Admin section content remains unchanged] -->
+  </section>
+
+</div>
+
+<footer>
+  &copy; 2025 ToxiScan. Built with ❤ for a safer internet.
+</footer>
+
+<script>
+  async function detectText() {
+    const text = document.getElementById("text-input").value;
+    const response = await fetch("http://127.0.0.1:5000/detect_text", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    const result = await response.json();
+    document.getElementById("text-result").textContent = JSON.stringify(result, null, 2);
+  }
+
+  async function detectImage() {
+    const imageInput = document.getElementById("image-input").files[0];
+    const formData = new FormData();
+    formData.append("image", imageInput);
+
+    const response = await fetch("http://127.0.0.1:5000/detect_image", {
+      method: "POST",
+      body: formData
+    });
+    const result = await response.json();
+    document.getElementById("image-result").textContent = JSON.stringify(result, null, 2);
+  }
+
+  async function detectNSFW() {
+    const imageInput = document.getElementById("nsfw-image-input").files[0];
+    const formData = new FormData();
+    formData.append("image", imageInput);
+
+    const response = await fetch("http://127.0.0.1:5000/detect_nsfw_image", {
+      method: "POST",
+      body: formData
+    });
+    const result = await response.json();
+    document.getElementById("nsfw-result").textContent = JSON.stringify(result, null, 2);
+  }
+
+  async function getLogs() {
+    const res = await fetch("http://127.0.0.1:5000/admin/get_logs");
+    const data = await res.json();
+    document.getElementById("admin-logs").textContent = JSON.stringify(data, null, 2);
+  }
+
+  async function deleteText() {
+    const text = document.getElementById("text-to-delete").value;
+    const res = await fetch("http://127.0.0.1:5000/admin/delete_text", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+    document.getElementById("admin-response").textContent = JSON.stringify(data, null, 2);
+    getLogs();
+  }
+
+  async function banUser() {
+    const username = document.getElementById("username-to-ban").value;
+    const res = await fetch("http://127.0.0.1:5000/admin/ban_user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    document.getElementById("admin-response").textContent = JSON.stringify(data, null, 2);
+    getLogs();
+  }
+
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    const target = [...document.querySelectorAll('.nav-link')].find(a => a.getAttribute('onclick')?.includes(`showSection('${id}')`));
+    if (target) target.classList.add('active');
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle("dark-mode");
+  }
+</script>
+
+</body>
+</html>
