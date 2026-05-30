@@ -1,6 +1,8 @@
 flask
+flask-cors
 transformers
 torch
 Pillow
-scikit-learn
-joblib
+pytesseract
+numpy
+opencv-python
