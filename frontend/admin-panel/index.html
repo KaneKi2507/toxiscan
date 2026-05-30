@@ -1,48 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Panel</title>
+  <title>ToxiScan Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    ul { list-style-type: none; padding: 0; }
+    li { background: #f4f4f4; margin: 5px 0; padding: 10px; border-radius: 5px; }
+    button { margin-left: 10px; cursor: pointer; color: white; background: red; border: none; padding: 5px 10px; border-radius: 3px;}
+    .ban-btn { background: darkorange; }
+  </style>
 </head>
 <body>
-  <h2>All Comments</h2>
-  <ul id="commentList"></ul>
+  <h2>ToxiScan Admin Dashboard</h2>
+  
+  <h3>Text Logs</h3>
+  <ul id="textList"></ul>
+
+  <hr>
+
+  <h3>Ban a User</h3>
+  <input type="text" id="usernameInput" placeholder="Enter username">
+  <button class="ban-btn" onclick="banUser()">Ban User</button>
+  
+  <h3>Banned Users</h3>
+  <ul id="bannedList"></ul>
 
   <script>
-    async function loadComments() {
-      const res = await fetch("http://localhost:3000/admin/comments");
-      const comments = await res.json();
+    async function loadLogs() {
+      const res = await fetch("http://127.0.0.1:5000/admin/get_logs");
+      const data = await res.json();
 
-      const list = document.getElementById('commentList');
-      list.innerHTML = "";
+      const textList = document.getElementById('textList');
+      textList.innerHTML = "";
 
-      comments.forEach(comment => {
-        const item = document.createElement("li");
-        item.innerHTML = `
-          <strong>${comment.comment}</strong> (Toxic: ${comment.isToxic}) 
-          <button onclick="deleteComment(${comment.id})">Delete</button> 
-          <button onclick="banUser('${comment.userId}')">Ban User</button>
+      data.texts.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>"${item.text}"</strong> 
+          <br><small>Scores: ${JSON.stringify(item.prediction)}</small>
+          <button onclick="deleteText('${item.text}')">Delete Log</button> 
         `;
-        list.appendChild(item);
+        textList.appendChild(li);
+      });
+
+      const bannedList = document.getElementById('bannedList');
+      bannedList.innerHTML = "";
+      data.banned_users.forEach(user => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${user}</strong>`;
+        bannedList.appendChild(li);
       });
     }
 
-    async function deleteComment(id) {
-      await fetch(`http://localhost:3000/admin/comment/${id}`, {
-        method: "DELETE"
-      });
-      loadComments();
-    }
-
-    async function banUser(userId) {
-      await fetch("http://localhost:3000/admin/ban", {
+    async function deleteText(text) {
+      await fetch("http://127.0.0.1:5000/admin/delete_text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ text: text })
       });
-      alert(`User ${userId} has been banned.`);
+      loadLogs();
     }
 
-    loadComments();
+    async function banUser() {
+      const username = document.getElementById('usernameInput').value;
+      if (!username) return;
+
+      await fetch("http://127.0.0.1:5000/admin/ban_user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username })
+      });
+      
+      document.getElementById('usernameInput').value = "";
+      alert(`User ${username} has been banned.`);
+      loadLogs();
+    }
+
+    // Load data when page opens
+    loadLogs();
   </script>
 </body>
 </html>

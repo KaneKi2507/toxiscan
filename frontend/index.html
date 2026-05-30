@@ -58,6 +58,13 @@
       <h3>🛡 Admin Control Panel Access</h3>
       <button onclick="showSection('admin')">Go to Admin Panel</button>
     </div>
+
+    <div style="margin-top: 20px;">
+      <h3>👁️ Object Detection</h3>
+      <input type="file" id="object-image-input" accept="image/*" />
+      <button onclick="detectObjects()">Detect Objects</button>
+      <pre id="object-result"></pre>
+    </div>
   </section>
 
   <!-- Admin Panel -->
@@ -149,6 +156,19 @@
 
   function toggleTheme() {
     document.body.classList.toggle("dark-mode");
+  }
+  
+  async function detectObjects() {
+    const imageInput = document.getElementById("object-image-input").files[0];
+    const formData = new FormData();
+    formData.append("image", imageInput);
+
+    const response = await fetch("http://127.0.0.1:5000/detect_objects", {
+      method: "POST",
+      body: formData
+    });
+    const result = await response.json();
+    document.getElementById("object-result").textContent = JSON.stringify(result, null, 2);
   }
 </script>
 
