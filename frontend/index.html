@@ -4,173 +4,298 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ToxiScan | AI Content Moderation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    /* [Style block remains unchanged] */
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: var(--card-bg);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    nav { display: flex; gap: 15px; }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      padding: 2rem;
+      flex: 1;
+    }
+
+    .hidden { display: none !important; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    h2, h3 { margin-bottom: 1rem; color: var(--text-main); }
+    h3 { font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+
+    textarea, input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      background: var(--bg-color);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    textarea:focus { outline: none; border-color: var(--accent); }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    button:hover { background: var(--accent-hover); }
+    
+    .btn-admin { background: #6366f1; width: 100%; max-width: 300px;}
+    .btn-admin:hover { background: #4f46e5; }
+
+    pre {
+      background: var(--bg-color);
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: var(--success);
+      font-size: 0.9rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      width: 100%;
+      border-top: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>ToxiScan</h1>
+  <h1>🛡️ ToxiScan</h1>
   <nav>
-    <a href="#" class="nav-link active" onclick="showSection('home')">About</a>
-    <a href="#" class="nav-link" onclick="showSection('services')">Services</a>
-    <a href="#" class="nav-link" onclick="showSection('admin')">Admin</a>
-    <button class="theme-toggle" onclick="toggleTheme()">🌗 Theme</button>
+    <a class="nav-link active" onclick="showSection('home')">About</a>
+    <a class="nav-link" onclick="showSection('services')">Services</a>
+    <a class="nav-link" href="admin-panel/index.html" target="_blank">Admin Panel</a>
   </nav>
 </header>
 
 <div class="container">
-
-  <!-- About Section -->
+  
   <section id="home">
-    <!-- [About section content remains unchanged] -->
+    <div class="card">
+      <h2>Welcome to ToxiScan</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        An AI-powered content moderation system built to detect toxic text, analyze images for inappropriate content, and identify objects using machine learning.
+      </p>
+      <button onclick="showSection('services')">Get Started 🚀</button>
+    </div>
   </section>
 
-  <!-- Services Section -->
   <section id="services" class="hidden">
-    <h2>🔍 Services We Offer</h2>
-    <p>Explore and use our powerful moderation tools below.</p>
-
-    <div style="margin-top: 20px;">
-      <h3>📝 Text Detection</h3>
-      <label for="text-input">Enter your text below:</label>
-      <textarea id="text-input" rows="5" placeholder="Type something..."></textarea>
-      <button onclick="detectText()">Check Text</button>
-      <pre id="text-result"></pre>
+    
+    <div class="card">
+      <h3>📝 Text Toxicity Detection</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Check text for hate speech, insults, or toxicity.</p>
+      <textarea id="text-input" rows="3" placeholder="Type something to analyze..."></textarea>
+      <button onclick="detectText()">Analyze Text</button>
+      <pre id="text-result">Results will appear here...</pre>
     </div>
 
-    <div style="margin-top: 20px;">
-      <h3>🖼 Image Text Detection (OCR)</h3>
+    <div class="card">
+      <h3>📸 Image Text Detection (OCR)</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Extract text from an image and check it for toxicity.</p>
       <input type="file" id="image-input" accept="image/*" />
-      <button onclick="detectImage()">Check Image</button>
-      <pre id="image-result"></pre>
+      <button onclick="detectImage()">Scan Image Text</button>
+      <pre id="image-result">Results will appear here...</pre>
     </div>
 
-    <div style="margin-top: 20px;">
+    <div class="card">
       <h3>🔞 NSFW Image Detection</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Analyze an image for explicit or unsafe content.</p>
       <input type="file" id="nsfw-image-input" accept="image/*" />
-      <button onclick="detectNSFW()">Check NSFW</button>
-      <pre id="nsfw-result"></pre>
+      <button onclick="detectNSFW()">Check NSFW Status</button>
+      <pre id="nsfw-result">Results will appear here...</pre>
     </div>
 
-    <div style="margin-top: 20px;">
-      <h3>🛡 Admin Control Panel Access</h3>
-      <button onclick="showSection('admin')">Go to Admin Panel</button>
-    </div>
-
-    <div style="margin-top: 20px;">
+    <div class="card">
       <h3>👁️ Object Detection</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Identify objects present within an image.</p>
       <input type="file" id="object-image-input" accept="image/*" />
       <button onclick="detectObjects()">Detect Objects</button>
-      <pre id="object-result"></pre>
+      <pre id="object-result">Results will appear here...</pre>
     </div>
-  </section>
 
-  <!-- Admin Panel -->
-  <section id="admin" class="hidden">
-    <!-- [Admin section content remains unchanged] -->
-  </section>
+    <div class="card" style="text-align: center;">
+      <h3>⚙️ Administration</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Access the moderation logs and manage user bans.</p>
+      <button class="btn-admin" onclick="window.open('admin-panel/index.html', '_blank')">Open Admin Panel</button>
+    </div>
 
+  </section>
 </div>
 
 <footer>
-  &copy; 2025 ToxiScan. Built with ❤ for a safer internet.
+  &copy; 2026 ToxiScan | Team Null Pointers
 </footer>
 
 <script>
-  async function detectText() {
-    const text = document.getElementById("text-input").value;
-    const response = await fetch("http://127.0.0.1:5000/detect_text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-    const result = await response.json();
-    document.getElementById("text-result").textContent = JSON.stringify(result, null, 2);
-  }
-
-  async function detectImage() {
-    const imageInput = document.getElementById("image-input").files[0];
-    const formData = new FormData();
-    formData.append("image", imageInput);
-
-    const response = await fetch("http://127.0.0.1:5000/detect_image", {
-      method: "POST",
-      body: formData
-    });
-    const result = await response.json();
-    document.getElementById("image-result").textContent = JSON.stringify(result, null, 2);
-  }
-
-  async function detectNSFW() {
-    const imageInput = document.getElementById("nsfw-image-input").files[0];
-    const formData = new FormData();
-    formData.append("image", imageInput);
-
-    const response = await fetch("http://127.0.0.1:5000/detect_nsfw_image", {
-      method: "POST",
-      body: formData
-    });
-    const result = await response.json();
-    document.getElementById("nsfw-result").textContent = JSON.stringify(result, null, 2);
-  }
-
-  async function getLogs() {
-    const res = await fetch("http://127.0.0.1:5000/admin/get_logs");
-    const data = await res.json();
-    document.getElementById("admin-logs").textContent = JSON.stringify(data, null, 2);
-  }
-
-  async function deleteText() {
-    const text = document.getElementById("text-to-delete").value;
-    const res = await fetch("http://127.0.0.1:5000/admin/delete_text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-    const data = await res.json();
-    document.getElementById("admin-response").textContent = JSON.stringify(data, null, 2);
-    getLogs();
-  }
-
-  async function banUser() {
-    const username = document.getElementById("username-to-ban").value;
-    const res = await fetch("http://127.0.0.1:5000/admin/ban_user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username })
-    });
-    const data = await res.json();
-    document.getElementById("admin-response").textContent = JSON.stringify(data, null, 2);
-    getLogs();
-  }
-
+  // Navigation Logic
   function showSection(id) {
     document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
+    
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
     const target = [...document.querySelectorAll('.nav-link')].find(a => a.getAttribute('onclick')?.includes(`showSection('${id}')`));
     if (target) target.classList.add('active');
   }
 
-  function toggleTheme() {
-    document.body.classList.toggle("dark-mode");
+  // API Call: Text Toxicity
+  async function detectText() {
+    const text = document.getElementById("text-input").value;
+    if (!text) return alert("Please enter some text!");
+    
+    document.getElementById("text-result").textContent = "Analyzing...";
+    try {
+      const response = await fetch("http://127.0.0.1:5000/detect_text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      const result = await response.json();
+      document.getElementById("text-result").textContent = JSON.stringify(result.prediction, null, 2);
+    } catch (e) {
+      document.getElementById("text-result").textContent = "Error connecting to server.";
+    }
   }
-  
-  async function detectObjects() {
-    const imageInput = document.getElementById("object-image-input").files[0];
+
+  // API Call: Image OCR
+  async function detectImage() {
+    const imageInput = document.getElementById("image-input").files[0];
+    if (!imageInput) return alert("Please select an image!");
+
+    document.getElementById("image-result").textContent = "Scanning...";
     const formData = new FormData();
     formData.append("image", imageInput);
 
-    const response = await fetch("http://127.0.0.1:5000/detect_objects", {
-      method: "POST",
-      body: formData
-    });
-    const result = await response.json();
-    document.getElementById("object-result").textContent = JSON.stringify(result, null, 2);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/detect_image", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+      document.getElementById("image-result").textContent = `Extracted: "${result.text_extracted}"\n\nToxicity: \n${JSON.stringify(result.prediction, null, 2)}`;
+    } catch (e) {
+      document.getElementById("image-result").textContent = "Error connecting to server.";
+    }
+  }
+
+  // API Call: NSFW
+  async function detectNSFW() {
+    const imageInput = document.getElementById("nsfw-image-input").files[0];
+    if (!imageInput) return alert("Please select an image!");
+
+    document.getElementById("nsfw-result").textContent = "Analyzing...";
+    const formData = new FormData();
+    formData.append("image", imageInput);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/detect_nsfw_image", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+      document.getElementById("nsfw-result").textContent = JSON.stringify(result.prediction, null, 2);
+    } catch (e) {
+      document.getElementById("nsfw-result").textContent = "Error connecting to server.";
+    }
+  }
+
+  // API Call: Objects
+  async function detectObjects() {
+    const imageInput = document.getElementById("object-image-input").files[0];
+    if (!imageInput) return alert("Please select an image!");
+
+    document.getElementById("object-result").textContent = "Detecting objects...";
+    const formData = new FormData();
+    formData.append("image", imageInput);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/detect_objects", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.json();
+      document.getElementById("object-result").textContent = JSON.stringify(result.prediction, null, 2);
+    } catch (e) {
+      document.getElementById("object-result").textContent = "Error connecting to server.";
+    }
   }
 </script>
-
 </body>
 </html>
