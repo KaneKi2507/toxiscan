@@ -1,29 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>ToxiScan Admin Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ToxiScan | Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    ul { list-style-type: none; padding: 0; }
-    li { background: #f4f4f4; margin: 5px 0; padding: 10px; border-radius: 5px; }
-    button { margin-left: 10px; cursor: pointer; color: white; background: red; border: none; padding: 5px 10px; border-radius: 3px;}
-    .ban-btn { background: darkorange; }
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 2rem;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    h1 { color: var(--accent); font-size: 1.8rem; }
+    h2 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back-link:hover { color: var(--text-main); }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    ul { list-style-type: none; }
+    
+    .log-item {
+      background: var(--bg-color);
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .log-content { flex: 1; }
+    .log-text { font-size: 1rem; font-weight: 600; margin-bottom: 5px; }
+    .log-scores { font-family: monospace; font-size: 0.85rem; color: var(--text-muted); }
+
+    button {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      color: white;
+      transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.8; }
+    
+    .btn-delete { background: var(--danger); font-size: 0.8rem;}
+    .btn-ban { background: #f59e0b; width: 100%; margin-top: 10px;}
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-color);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    input[type="text"]:focus { outline: none; border-color: var(--accent); }
+
+    .banned-user {
+      display: inline-block;
+      background: var(--danger);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 5px;
+    }
+
   </style>
 </head>
 <body>
-  <h2>ToxiScan Admin Dashboard</h2>
-  
-  <h3>Text Logs</h3>
-  <ul id="textList"></ul>
 
-  <hr>
-
-  <h3>Ban a User</h3>
-  <input type="text" id="usernameInput" placeholder="Enter username">
-  <button class="ban-btn" onclick="banUser()">Ban User</button>
+  <div class="header-bar">
+    <h1>⚙️ System Logs & Admin</h1>
+    <a href="../index.html" class="back-link">← Back to Main Site</a>
+  </div>
   
-  <h3>Banned Users</h3>
-  <ul id="bannedList"></ul>
+  <div class="dashboard-grid">
+    <div class="card">
+      <h2>Recent Text Queries</h2>
+      <ul id="textList">
+        <p style="color: var(--text-muted); font-style: italic;">Loading logs...</p>
+      </ul>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom: 2rem;">
+        <h2>Ban User</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Enter a username or ID to block them from the system.</p>
+        <input type="text" id="usernameInput" placeholder="e.g. toxic_user_99">
+        <button class="btn-ban" onclick="banUser()">Execute Ban</button>
+      </div>
+
+      <div class="card">
+        <h2>Banned Users Roster</h2>
+        <div id="bannedList">
+           <p style="color: var(--text-muted); font-style: italic; font-size: 0.9rem;">No users banned yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     async function loadLogs() {
@@ -33,23 +159,41 @@
       const textList = document.getElementById('textList');
       textList.innerHTML = "";
 
-      data.texts.forEach(item => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <strong>"${item.text}"</strong> 
-          <br><small>Scores: ${JSON.stringify(item.prediction)}</small>
-          <button onclick="deleteText('${item.text}')">Delete Log</button> 
-        `;
-        textList.appendChild(li);
-      });
+      if(data.texts.length === 0) {
+        textList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">No text logs recorded yet. Go to the main site to test the system.</p>`;
+      } else {
+        data.texts.forEach(item => {
+          const li = document.createElement("li");
+          li.className = "log-item";
+          
+          // Format the JSON nicely
+          const scoreString = Object.entries(item.prediction)
+            .map(([label, score]) => `${label}: ${score}`)
+            .join(' | ');
+
+          li.innerHTML = `
+            <div class="log-content">
+              <div class="log-text">"${item.text}"</div>
+              <div class="log-scores">${scoreString}</div>
+            </div>
+            <button class="btn-delete" onclick="deleteText('${item.text}')">Delete Log</button> 
+          `;
+          textList.appendChild(li);
+        });
+      }
 
       const bannedList = document.getElementById('bannedList');
       bannedList.innerHTML = "";
-      data.banned_users.forEach(user => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${user}</strong>`;
-        bannedList.appendChild(li);
-      });
+      if(data.banned_users.length === 0) {
+        bannedList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">No users banned yet.</p>`;
+      } else {
+        data.banned_users.forEach(user => {
+          const span = document.createElement("span");
+          span.className = "banned-user";
+          span.innerText = user;
+          bannedList.appendChild(span);
+        });
+      }
     }
 
     async function deleteText(text) {

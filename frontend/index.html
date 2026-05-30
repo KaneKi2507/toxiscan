@@ -14,6 +14,8 @@
       --accent: #3b82f6;
       --accent-hover: #2563eb;
       --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
       --border: #334155;
     }
 
@@ -58,9 +60,7 @@
       cursor: pointer;
     }
 
-    .nav-link:hover, .nav-link.active {
-      color: var(--accent);
-    }
+    .nav-link:hover, .nav-link.active { color: var(--accent); }
 
     .container {
       width: 100%;
@@ -81,7 +81,20 @@
     }
 
     h2, h3 { margin-bottom: 1rem; color: var(--text-main); }
-    h3 { font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    h3 { font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    h4 { margin-top: 1rem; margin-bottom: 0.5rem; color: var(--accent); }
+
+    p, ul { margin-bottom: 1rem; color: var(--text-muted); }
+    ul { padding-left: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+
+    .highlight-box {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
 
     textarea, input[type="file"] {
       width: 100%;
@@ -108,8 +121,7 @@
     }
 
     button:hover { background: var(--accent-hover); }
-    
-    .btn-admin { background: #6366f1; width: 100%; max-width: 300px;}
+    .btn-admin { background: #6366f1; width: 100%; max-width: 300px; display: block; margin: 0 auto;}
     .btn-admin:hover { background: #4f46e5; }
 
     pre {
@@ -139,8 +151,8 @@
 <header>
   <h1>🛡️ ToxiScan</h1>
   <nav>
-    <a class="nav-link active" onclick="showSection('home')">About</a>
-    <a class="nav-link" onclick="showSection('services')">Services</a>
+    <a class="nav-link active" onclick="showSection('home')">Home / Guide</a>
+    <a class="nav-link" onclick="showSection('services')">Moderation Tools</a>
     <a class="nav-link" href="admin-panel/index.html" target="_blank">Admin Panel</a>
   </nav>
 </header>
@@ -150,10 +162,40 @@
   <section id="home">
     <div class="card">
       <h2>Welcome to ToxiScan</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1rem;">
-        An AI-powered content moderation system built to detect toxic text, analyze images for inappropriate content, and identify objects using machine learning.
+      <p>
+        ToxiScan is an AI-powered content moderation system built to help communities stay safe. 
+        It acts as an automated filter, detecting toxic text, analyzing images for inappropriate content, and identifying objects in media using state-of-the-art machine learning models.
       </p>
-      <button onclick="showSection('services')">Get Started 🚀</button>
+
+      <div class="highlight-box">
+        <h4 style="margin-top: 0;">📊 Understanding the Rating Scale (0 to 1)</h4>
+        <p style="margin-bottom: 0;">
+          Our AI models output a <strong>confidence score</strong> ranging from <strong>0.0000 to 1.0000</strong>.
+          <br><br>
+          • <strong>Closer to 0.0:</strong> The content is considered <strong>SAFE</strong>. The AI is highly confident that the text is polite or the image is appropriate. <br>
+          • <strong>Closer to 1.0:</strong> The content is flagged as <strong>UNSAFE</strong>. A high score means the AI strongly believes the content contains toxicity, hate speech, or NSFW material.
+        </p>
+      </div>
+
+      <h4>⚙️ Core Features</h4>
+      <ul>
+        <li><strong>Text Toxicity Detection:</strong> Scans sentences for hate speech, insults, and general toxicity using the <code>toxic-bert</code> model.</li>
+        <li><strong>Image Text OCR:</strong> Uses Tesseract OCR to read text hidden inside images (like memes or screenshots) and runs it through our toxicity scanner.</li>
+        <li><strong>NSFW Image Detection:</strong> Analyzes uploaded images to detect sexually explicit or unsafe visual content.</li>
+        <li><strong>Object Recognition:</strong> Identifies and lists everyday objects present within an image.</li>
+        <li><strong>Admin Dashboard:</strong> A dedicated control panel to view moderation logs, delete flagged content, and ban malicious users.</li>
+      </ul>
+
+      <h4>🚀 How to Use</h4>
+      <ol style="padding-left: 1.5rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        <li style="margin-bottom: 0.5rem;">Navigate to the <strong>Moderation Tools</strong> tab at the top.</li>
+        <li style="margin-bottom: 0.5rem;">Choose the tool you want to test (Text, Image OCR, NSFW, or Object Detection).</li>
+        <li style="margin-bottom: 0.5rem;">Enter your text or upload an image file.</li>
+        <li style="margin-bottom: 0.5rem;">Click the action button and wait for the AI to return the JSON prediction scores.</li>
+        <li>Check the <strong>Admin Panel</strong> to see how your tested content was logged in the backend.</li>
+      </ol>
+
+      <button onclick="showSection('services')">Go to Moderation Tools ➔</button>
     </div>
   </section>
 
@@ -161,7 +203,7 @@
     
     <div class="card">
       <h3>📝 Text Toxicity Detection</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Check text for hate speech, insults, or toxicity.</p>
+      <p style="font-size: 0.9rem; margin-bottom: 10px;">Check text for hate speech, insults, or toxicity.</p>
       <textarea id="text-input" rows="3" placeholder="Type something to analyze..."></textarea>
       <button onclick="detectText()">Analyze Text</button>
       <pre id="text-result">Results will appear here...</pre>
@@ -169,7 +211,7 @@
 
     <div class="card">
       <h3>📸 Image Text Detection (OCR)</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Extract text from an image and check it for toxicity.</p>
+      <p style="font-size: 0.9rem; margin-bottom: 10px;">Extract text from an image and check it for toxicity.</p>
       <input type="file" id="image-input" accept="image/*" />
       <button onclick="detectImage()">Scan Image Text</button>
       <pre id="image-result">Results will appear here...</pre>
@@ -177,7 +219,7 @@
 
     <div class="card">
       <h3>🔞 NSFW Image Detection</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Analyze an image for explicit or unsafe content.</p>
+      <p style="font-size: 0.9rem; margin-bottom: 10px;">Analyze an image for explicit or unsafe content.</p>
       <input type="file" id="nsfw-image-input" accept="image/*" />
       <button onclick="detectNSFW()">Check NSFW Status</button>
       <pre id="nsfw-result">Results will appear here...</pre>
@@ -185,7 +227,7 @@
 
     <div class="card">
       <h3>👁️ Object Detection</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Identify objects present within an image.</p>
+      <p style="font-size: 0.9rem; margin-bottom: 10px;">Identify objects present within an image.</p>
       <input type="file" id="object-image-input" accept="image/*" />
       <button onclick="detectObjects()">Detect Objects</button>
       <pre id="object-result">Results will appear here...</pre>
@@ -193,15 +235,15 @@
 
     <div class="card" style="text-align: center;">
       <h3>⚙️ Administration</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Access the moderation logs and manage user bans.</p>
-      <button class="btn-admin" onclick="window.open('admin-panel/index.html', '_blank')">Open Admin Panel</button>
+      <p style="font-size: 0.9rem; margin-bottom: 15px;">Access the moderation logs and manage user bans.</p>
+      <button class="btn-admin" onclick="window.open('admin-panel/index.html', '_blank')">Open Admin Dashboard</button>
     </div>
 
   </section>
 </div>
 
 <footer>
-  &copy; 2026 ToxiScan | Team Null Pointers
+  &copy; ToxiScan | Developed by Team Null Pointers
 </footer>
 
 <script>
